@@ -157,15 +157,21 @@
   const revBox = document.querySelector('[data-reviews]');
   if (revBox && window.VH_REVIEWS) {
     const limit = +revBox.dataset.reviews || 99;
-    const star = '<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 1.5l2.6 5.5 6 .7-4.4 4.1 1.2 6L10 14.9 4.6 17.8l1.2-6L1.4 7.7l6-.7z"/></svg>';
     const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
     revBox.innerHTML = window.VH_REVIEWS.slice(0, limit).map(r => `
-      <article class="rev">
-        ${r.sample ? '<span class="sample" title="Замініть на справжній відгук клієнта">Зразок</span>' : ''}
-        <div class="stars" aria-label="Оцінка ${r.stars} з 5">${star.repeat(r.stars)}</div>
-        <q>${esc(r.text)}</q>
-        <div class="who"><span class="av" aria-hidden="true">${esc(r.name[0])}</span><div><b>${esc(r.name)}</b><span>${esc(r.job)}</span></div></div>
-      </article>`).join('');
+      <figure class="rev">
+        <blockquote>${esc(r.text)}</blockquote>
+        <figcaption><b>${esc(r.name)}</b>${r.job ? `<span>${esc(r.job)}</span>` : ''}</figcaption>
+      </figure>`).join('');
+  }
+
+  /* ---------- mobile call chooser ---------- */
+  const callBtn = document.querySelector('.hdr-ic'), callPop = document.querySelector('.callpop');
+  if (callBtn && callPop) {
+    const setOpen = o => { callPop.hidden = !o; callBtn.setAttribute('aria-expanded', o); };
+    callBtn.addEventListener('click', e => { e.stopPropagation(); setOpen(callPop.hidden); });
+    document.addEventListener('click', e => { if (!callPop.hidden && !callPop.contains(e.target)) setOpen(false); });
+    addEventListener('keydown', e => { if (e.key === 'Escape') setOpen(false); });
   }
 
   /* ---------- forms (formsubmit.co) ---------- */
